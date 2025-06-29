@@ -6,11 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { TagInput } from '@/components/TagInput';
 
 export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () => void }) {
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [tags, setTags] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -25,13 +27,13 @@ export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () 
     const handleSubmit = async () => {
         setError(null);
         if (!validateForm()) return;
-        if (loading) return; // Prevent multiple submissions
+        if (loading) return;
         setLoading(true);
         try {
             const res = await fetch('/api/notes/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content }),
+                body: JSON.stringify({ title, content, tags }),
             });
 
             const data = await res.json();
@@ -39,6 +41,7 @@ export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () 
 
             setTitle('');
             setContent('');
+            setTags([]);
             setOpen(false);
             onNoteCreated?.();
         } catch (err: any) {
@@ -69,8 +72,9 @@ export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () 
                     onChange={(e) => setContent(e.target.value)}
                     className="mb-3"
                 />
-                {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-                <Button onClick={handleSubmit} disabled={loading} className="w-full">
+                <TagInput tags={tags} setTags={setTags} />
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4">
                     {loading ? 'Saving...' : 'Save Note'}
                 </Button>
             </DialogContent>

@@ -3,22 +3,25 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
+
+import { X } from 'lucide-react';
 import { NotesList } from '@/components/NotesList';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
-import { debounce } from 'lodash';
+import { addTagIfNotExists, generateSuggestions } from '@/utils/dashboard';
+import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
 
 const CreateNoteModal = dynamic(() => import('@/components/CreateNoteModal'), { ssr: false });
 
-interface Note {
+export interface Note {
     id: string;
     title: string;
     content: string;
     createdAt: string;
-    tag?: string;
+    tags?: string[];
 }
 
 export default function DashboardPage() {
@@ -30,9 +33,12 @@ export default function DashboardPage() {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     const fetchNotes = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/notes`);
+            const res = await fetch('/api/notes');
             if (!res.ok) throw new Error('Failed to fetch notes');
             const data = await res.json();
             const sorted = data.sort((a: Note, b: Note) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -40,6 +46,26 @@ export default function DashboardPage() {
             setFilteredNotes(sorted);
         } catch (err) {
             setError('Error loading notes');
+        }
+    };
+
+    const confirmDelete = (id: string) => {
+        setDeleteId(id);
+        setDialogOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!deleteId) return;
+        try {
+            const res = await fetch(`/api/notes/${deleteId}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete note');
+            setNotes(prev => prev?.filter(note => note.id !== deleteId) || null);
+            setFilteredNotes(prev => prev?.filter(note => note.id !== deleteId) || null);
+        } catch (err) {
+            setError('Error deleting note');
+        } finally {
+            setDialogOpen(false);
+            setDeleteId(null);
         }
     };
 
@@ -55,7 +81,7 @@ export default function DashboardPage() {
                         const match =
                             note.title.toLowerCase().includes(filter) ||
                             note.content.toLowerCase().includes(filter) ||
-                            (note.tag && note.tag.toLowerCase().includes(filter));
+                            (note.tags && note.tags.some(tag => tag.toLowerCase().includes(filter)));
                         return match;
                     });
                 });
@@ -72,11 +98,13 @@ export default function DashboardPage() {
     const addSearchTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && input.trim()) {
             e.preventDefault();
-            if (!searchTags.includes(input.trim())) {
-                setSearchTags(prev => [...prev, input.trim()]);
-            }
+            setSearchTags(prev => addTagIfNotExists(prev, input.trim()));
             setInput('');
         }
+    };
+
+    const handleTagClick = (tag: string) => {
+        setSearchTags(prev => addTagIfNotExists(prev, tag));
     };
 
     useEffect(() => {
@@ -84,19 +112,11 @@ export default function DashboardPage() {
             setSuggestions([]);
             return;
         }
-        const existing = new Set(searchTags);
-        const matches = notes
-            .flatMap(n => [n.title, n.content, n.tag || ''])
-            .filter(Boolean)
-            .map(s => s.toLowerCase())
-            .filter(s => s.includes(input.toLowerCase()) && !existing.has(s));
-        setSuggestions(Array.from(new Set(matches)).slice(0, 5));
+        setSuggestions(generateSuggestions(notes, input, searchTags));
     }, [input, notes, searchTags]);
 
     const selectSuggestion = (value: string) => {
-        if (!searchTags.includes(value)) {
-            setSearchTags(prev => [...prev, value]);
-        }
+        setSearchTags(prev => addTagIfNotExists(prev, value));
         setInput('');
     };
 
@@ -137,9 +157,15 @@ export default function DashboardPage() {
                 )}
                 <div className="flex flex-wrap gap-2 mt-2">
                     {searchTags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="flex items-center gap-1">
-                            {tag}
-                            <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
+                        <Badge key={tag} variant="secondary" className="flex items-center gap-1 pr-1">
+                            <span>{tag}</span>
+                            <button
+                                onClick={() => removeTag(tag)}
+                                className="ml-1 p-0.5 hover:bg-gray-300 rounded"
+                                aria-label={`Remove ${tag}`}
+                            >
+                                <X className="w-3 h-3" />
+                            </button>
                         </Badge>
                     ))}
                     {searchTags.length > 0 && (
@@ -161,8 +187,14 @@ export default function DashboardPage() {
                     <Skeleton className="h-24 w-full rounded-xl" />
                 </div>
             ) : (
-                <NotesList notes={filteredNotes} />
+                <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} />
             )}
+
+            <ConfirmDeleteDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                onConfirm={handleDelete}
+            />
         </main>
     );
 }

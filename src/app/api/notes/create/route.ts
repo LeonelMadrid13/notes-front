@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { title, content } = body;
+    const { title, content, tags } = body;
 
     if (!title || !content) {
         return NextResponse.json({ message: 'Title and content required' }, { status: 400 });
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, content, userId }),
+        body: JSON.stringify({ title, content, userId, tags }),
     });
 
     const data = await response.json();

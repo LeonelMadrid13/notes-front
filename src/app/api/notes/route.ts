@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
             },
         });
 
-        console.log('[DEBUG] Notes API response status:', response.status);
+        // console.log('[DEBUG] Notes API response status:', response.status);
 
         if (!response.ok) {
             const errorData = await response.json();
