@@ -1,3 +1,5 @@
+// src/components/LoginComponent.tsx
+
 'use client';
 const LoginComponent = () => {
     const login = async (email: string, password: string) => {

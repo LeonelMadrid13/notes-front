@@ -1,34 +1,34 @@
-// app/(auth)/login/layout.tsx
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const router = useRouter();
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async () => {
+    const handleRegister = async () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch('/api/login', {
+            const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ name, email, password }),
             });
 
             const data = await res.json();
             if (!res.ok) throw new Error(data.message);
 
-            router.push('/dashboard'); // redirect on success
+            router.push('/dashboard'); // auto-login redirect
         } catch (err: any) {
-            setError(err.message || 'Login failed');
+            setError(err.message || 'Registration failed');
         } finally {
             setLoading(false);
         }
@@ -36,7 +36,14 @@ export default function LoginPage() {
 
     return (
         <div className="max-w-md mx-auto mt-20 p-6 border rounded-2xl shadow-lg">
-            <h1 className="text-xl font-semibold mb-4">Login</h1>
+            <h1 className="text-xl font-semibold mb-4">Register</h1>
+
+            <Input
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mb-3"
+            />
 
             <Input
                 type="email"
@@ -56,20 +63,9 @@ export default function LoginPage() {
 
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-            <Button onClick={handleLogin} disabled={loading} className="w-full">
-                {loading ? 'Logging in...' : 'Login'}
+            <Button onClick={handleRegister} disabled={loading} className="w-full">
+                {loading ? 'Registering...' : 'Register'}
             </Button>
-
-            <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 mb-2">Don't have an account?</p>
-                <Button
-                    variant="outline"
-                    onClick={() => router.push('/register')}
-                    className="w-full"
-                >
-                    Register
-                </Button>
-            </div>
         </div>
     );
-} 
+}

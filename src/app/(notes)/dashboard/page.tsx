@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { addTagIfNotExists, generateSuggestions } from '@/utils/dashboard';
 import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
+import { LogoutConfirmDialog } from '@/components/LogoutConfirmDialog';
+
 
 const CreateNoteModal = dynamic(() => import('@/components/CreateNoteModal'), { ssr: false });
 
@@ -35,6 +37,9 @@ export default function DashboardPage() {
 
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
 
     const fetchNotes = async () => {
         try {
