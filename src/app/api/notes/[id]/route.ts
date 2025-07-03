@@ -10,7 +10,7 @@ const NoteUpdateSchema = z.object({
 });
 
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const token = (await cookies()).get('token')?.value;
     const userId = (await cookies()).get('id')?.value;
 
@@ -31,7 +31,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
 
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const token = (await cookies()).get('token')?.value;
     const userId = (await cookies()).get('id')?.value;
     if (!userId) {
@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const noteId = params.id;
+    const { id: noteId } = await params;
     if (!noteId) {
         return NextResponse.json({ message: 'Note ID is required' }, { status: 400 });
     }
