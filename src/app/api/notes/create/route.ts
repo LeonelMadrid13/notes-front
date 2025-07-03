@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Title and content required' }, { status: 400 });
     }
 
-    const response = await fetch(`${process.env.NOTES_API_URL || 'http://localhost:5000/api'}/notes`, {
+    const response = await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/notes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

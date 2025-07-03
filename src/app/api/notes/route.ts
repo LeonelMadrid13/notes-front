@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const url = `${process.env.NOTES_API_URL || 'http://localhost:5000/api'}/notes`;
+    const url = `${process.env.API_URL || 'http://localhost:5000'}/api/notes`;
     // console.log('[DEBUG] Fetching notes from:', url);
 
     try {
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
             method: 'GET', // don't send body in GET
             headers: {
                 Authorization: `Bearer ${token}`,
-                id: userId, // include id if provided
+                id: `id ${userId}`, // include id if provided
             },
         });
 

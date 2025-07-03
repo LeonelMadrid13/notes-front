@@ -133,6 +133,11 @@ export default function DashboardPage() {
         setSearchTags([]);
     };
 
+    // handle note updates, do not refetch all notes
+    const handleNoteUpdated = () => {
+        fetchNotes();
+    }
+
     return (
         <main className="max-w-2xl mx-auto mt-20 p-6 border rounded-2xl shadow-lg">
             <div className="flex justify-between items-center mb-4">
@@ -192,7 +197,7 @@ export default function DashboardPage() {
                     <Skeleton className="h-24 w-full rounded-xl" />
                 </div>
             ) : (
-                <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} />
+                <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} onNoteUpdated={handleNoteUpdated} />
             )}
 
             <ConfirmDeleteDialog

@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
     }
 
-    const response = await fetch(`${process.env.NOTES_API_URL || 'http://localhost:5000/api'}/auth/register`, {
+    const response = await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),

@@ -9,7 +9,7 @@ export default function LogoutPage() {
     useEffect(() => {
         const logout = async () => {
             await fetch('/api/logout', { method: 'POST' });
-            router.push('/login');
+            router.push('/');
         };
         logout();
     }, [router]);

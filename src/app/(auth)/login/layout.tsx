@@ -34,6 +34,11 @@ export default function LoginPage() {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleLogin();
+    };
+
+
     return (
         <div className="max-w-md mx-auto mt-20 p-6 border rounded-2xl shadow-lg">
             <h1 className="text-xl font-semibold mb-4">Login</h1>
@@ -52,6 +57,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="mb-3"
+                onKeyDown={handleKeyDown}
             />
 
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
