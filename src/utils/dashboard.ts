@@ -14,7 +14,7 @@ export function generateSuggestions(notes: Note[], input: string, exclude: strin
     return Array.from(
         new Set(
             notes
-                .flatMap(n => [n.title, n.content, n.tag || ''])
+                .flatMap(n => [n.title, n.content, ...(n.tags || [])])
                 .filter(Boolean)
                 .map(s => s.toLowerCase())
                 .filter(s => s.includes(input.toLowerCase()) && !excludeSet.has(s))
