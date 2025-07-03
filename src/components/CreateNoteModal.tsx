@@ -44,8 +44,12 @@ export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () 
             setTags([]);
             setOpen(false);
             onNoteCreated?.();
-        } catch (err: any) {
-            setError(err.message || 'Failed to create note');
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message || 'Failed to create note');
+            } else {
+                setError('Failed to create note');
+            }
         } finally {
             setLoading(false);
         }

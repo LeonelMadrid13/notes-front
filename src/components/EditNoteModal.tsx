@@ -56,8 +56,12 @@ export function EditNoteModal({ open, onOpenChange, note, onNoteUpdated }: EditN
 
             onOpenChange(false);
             onNoteUpdated?.();
-        } catch (err: any) {
-            setError(err.message || 'Update failed');
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message || 'Update failed');
+            } else {
+                setError('Update failed');
+            }
         } finally {
             setLoading(false);
         }

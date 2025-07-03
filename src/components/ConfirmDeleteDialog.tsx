@@ -1,7 +1,6 @@
 // components/ConfirmDeleteDialog.tsx
 import {
     AlertDialog,
-    AlertDialogTrigger,
     AlertDialogContent,
     AlertDialogHeader,
     AlertDialogFooter,

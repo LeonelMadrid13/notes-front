@@ -1,8 +1,8 @@
 // /app/api/notes/route.ts
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     // console.log('[DEBUG] Incoming request to /api/notes');
     // console.log('[DEBUG] Headers:', Object.fromEntries(req.headers.entries()));
 
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         const data = await response.json();
         // console.log('[DEBUG] Notes fetched:', Array.isArray(data) ? `${data.length} items` : data);
         return NextResponse.json(data);
-    } catch (err) {
+    } catch {
         // console.error('[DEBUG] Unexpected error:', err);
         return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
     }

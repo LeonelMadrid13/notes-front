@@ -6,13 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LogoutConfirmDialog } from '@/components/LogoutConfirmDialog';
 
-interface HeaderComponentProps {
-    name?: string;
-}
-
-const HeaderComponent: React.FC<HeaderComponentProps> = ({
-    name
-}) => {
+const HeaderComponent = () => {
     const router = useRouter();
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [userName, setUserName] = useState<string>('User');

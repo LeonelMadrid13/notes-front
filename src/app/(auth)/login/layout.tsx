@@ -27,8 +27,12 @@ export default function LoginPage() {
             if (!res.ok) throw new Error(data.message);
 
             router.push('/dashboard'); // redirect on success
-        } catch (err: any) {
-            setError(err.message || 'Login failed');
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Login failed');
+            }
         } finally {
             setLoading(false);
         }
@@ -67,7 +71,7 @@ export default function LoginPage() {
             </Button>
 
             <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 mb-2">Don't have an account?</p>
+                <p className="text-sm text-gray-600 mb-2">Don`&apos;`t have an account?</p>
                 <Button
                     variant="outline"
                     onClick={() => router.push('/register')}

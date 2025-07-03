@@ -75,8 +75,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         }
 
         return NextResponse.json(data);
-    } catch (err: any) {
-        console.error('[UPDATE ERROR]', err);
+    } catch {
+        // console.error('[UPDATE ERROR]', err);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }

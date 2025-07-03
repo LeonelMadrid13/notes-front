@@ -28,8 +28,12 @@ export default function RegisterComponent() {
             if (!res.ok) throw new Error(data.message);
 
             router.push('/dashboard'); // auto-login + redirect
-        } catch (err: any) {
-            setError(err.message || 'Registration failed');
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Registration failed');
+            }
         } finally {
             setLoading(false);
         }

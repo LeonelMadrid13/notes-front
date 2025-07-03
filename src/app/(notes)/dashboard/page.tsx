@@ -2,7 +2,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
 
@@ -13,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { addTagIfNotExists, generateSuggestions } from '@/utils/dashboard';
 import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
-import { LogoutConfirmDialog } from '@/components/LogoutConfirmDialog';
 
 
 const CreateNoteModal = dynamic(() => import('@/components/CreateNoteModal'), { ssr: false });
@@ -27,7 +25,6 @@ export interface Note {
 }
 
 export default function DashboardPage() {
-    const router = useRouter();
     const [notes, setNotes] = useState<Note[] | null>(null);
     const [filteredNotes, setFilteredNotes] = useState<Note[] | null>(null);
     const [searchTags, setSearchTags] = useState<string[]>([]);
@@ -38,9 +35,6 @@ export default function DashboardPage() {
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-
-
     const fetchNotes = async () => {
         try {
             const res = await fetch('/api/notes');
@@ -49,7 +43,7 @@ export default function DashboardPage() {
             const sorted = data.sort((a: Note, b: Note) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setNotes(sorted);
             setFilteredNotes(sorted);
-        } catch (err) {
+        } catch {
             setError('Error loading notes');
         }
     };
@@ -66,7 +60,7 @@ export default function DashboardPage() {
             if (!res.ok) throw new Error('Failed to delete note');
             setNotes(prev => prev?.filter(note => note.id !== deleteId) || null);
             setFilteredNotes(prev => prev?.filter(note => note.id !== deleteId) || null);
-        } catch (err) {
+        } catch {
             setError('Error deleting note');
         } finally {
             setDialogOpen(false);
