@@ -6,35 +6,40 @@ A clean, responsive front‑end for a note‑taking app, built to pair with a co
 
 - ✏️ Create, read, update, and delete notes (CRUD functionality).
 - Responsive UI with support for desktop and mobile.
-- User authentication & authorization (if the back‑end provides it).
-- Markdown editor with live preview (optional).
-- Real‑time updates using WebSocket or long polling (optional).
+- User authentication & authorization (via secure cookies + JWT).
+- Role-based access control (e.g. admin panel visibility).
+- Reusable components and dialogs (e.g. modals, inputs).
 
 ## 🚀 Tech Stack
 
-- Front‑end: React (or Next.js) + TypeScript
-- Styling: Tailwind CSS (or CSS modules / Styled Components)
-- State management: React Context / Redux / Zustand
-- HTTP client: Fetch API or Axios
-- Authentication: JWT stored in localStorage / cookies
-- Build tools: Vite / Webpack / Next.js
+- Framework: **Next.js 13+ App Router** with TypeScript
+- Styling: **Tailwind CSS**
+- State Management: **React Context API**
+- UI Components: **shadcn/ui** (Headless UI + Radix)
+- Auth: JWT in **httpOnly cookies**, validated with backend
+- API Calls: Native **fetch** to internal Next.js route handlers
 
 ## 🧩 Project Structure
 
-```
+```none
 notes-front/
-├── public/             # Static assets (icons, fonts)
+├── public/               # Static files like favicon.ico
 ├── src/
-│   ├── components/     # Reusable UI elements (NoteCard, Modal, Editor)
-│   ├── pages/          # Route components (NotesList, NoteDetail, NewNote)
-│   ├── context/        # Auth & notes context providers
-│   ├── hooks/          # Custom React hooks (e.g. useNotes, useAuth)
-│   ├── services/       # API calls (notes, auth)
-│   ├── styles/         # Global styles & Tailwind config
-│   └── utils/          # Helpers & constants
-├── .env.example        # Environment variables template (e.g. API_URL)
-├── tsconfig.json       # TypeScript configuration
-├── package.json        # Dependencies & scripts
+│   ├── app/              # App Router: routes and layouts
+│   │   ├── (auth)/       # login, register, logout pages
+│   │   ├── (notes)/      # dashboard and notes pages
+│   │   ├── api/          # Route handlers (login, notes CRUD)
+│   │   ├── register/     # Standalone register handler
+│   │   ├── user/         # Current user route handler
+│   ├── components/       # Reusable React components
+│   │   ├── ui/           # Common UI pieces (modals, buttons)
+│   ├── contexts/         # Auth context provider
+│   ├── lib/              # Shared backend helpers (e.g. auth)
+│   ├── utils/            # General helpers or constants
+│   ├── globals.css       # Global styles (Tailwind base)
+│   └── layout.tsx        # App-wide layout structure
+├── .env                  # Environment variables
+├── package.json          # Dependencies & scripts
 └── README.md
 ```
 
@@ -56,10 +61,10 @@ notes-front/
    ```
 
 3. **Configure environment**  
-   Copy `.env.example` → `.env` and set:
+   Create a `.env` file:
 
    ```env
-   API_URL=https://your‑notes‑api.com
+   API_URL=https://your-notes-api.com
    ```
 
 4. **Run the development server**  
@@ -70,7 +75,7 @@ notes-front/
    yarn dev
    ```
 
-   Navigate to [http://localhost:3000](http://localhost:3000).
+   Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🛠️ Available Commands
 
@@ -80,13 +85,11 @@ notes-front/
 | `build`        | Build the app for production                |
 | `start`        | Run the production build                    |
 | `lint`         | Run ESLint                                 |
-| `format`       | Run Prettier for code formatting            |
-| `test`         | Run tests (if setup with Jest/Vitest)       |
 
 ## 📦 Deployment
 
-- 🚀 Simple: deploy to Vercel or Netlify with zero-config.
-- ✅ Just ensure `API_URL` is set to your deployed API endpoint.
+- Deploy easily to **Vercel**, **Netlify**, or any Node.js-friendly platform.
+- Ensure environment variables (e.g. `API_URL`) are configured in your host settings.
 
 ## 🤝 Contributing
 
