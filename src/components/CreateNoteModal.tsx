@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { redirect } from 'next/navigation';
 import { TagInput } from '@/components/TagInput';
 
 export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () => void }) {
@@ -36,6 +37,7 @@ export default function CreateNoteModal({ onNoteCreated }: { onNoteCreated?: () 
                 body: JSON.stringify({ title, content, tags }),
             });
 
+            if (res.status === 401) redirect('/login');
             const data = await res.json();
             if (!res.ok) throw new Error(data.message);
 

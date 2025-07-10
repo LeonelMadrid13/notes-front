@@ -4,6 +4,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { debounce } from 'lodash';
 import dynamic from 'next/dynamic';
+import { redirect } from 'next/navigation';
 
 import { X } from 'lucide-react';
 import { NotesList } from '@/components/NotesList';
@@ -38,6 +39,7 @@ export default function DashboardPage() {
     const fetchNotes = async () => {
         try {
             const res = await fetch('/api/notes');
+            if (res.status === 401) redirect('/login');
             if (!res.ok) throw new Error('Failed to fetch notes');
             const data = await res.json();
             const sorted = data.sort((a: Note, b: Note) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -57,6 +59,7 @@ export default function DashboardPage() {
         if (!deleteId) return;
         try {
             const res = await fetch(`/api/notes/${deleteId}`, { method: 'DELETE' });
+            if (res.status === 401) redirect('/login');
             if (!res.ok) throw new Error('Failed to delete note');
             setNotes(prev => prev?.filter(note => note.id !== deleteId) || null);
             setFilteredNotes(prev => prev?.filter(note => note.id !== deleteId) || null);

@@ -23,13 +23,17 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
     const { id } = await params;
-    await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/notes/${id}`, {
+    const response = await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/notes/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
     });
+    if (response.status === 401) {
+        // User is unauthenticated — return 401 response
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
 
     return NextResponse.json({ message: 'Note deleted successfully' }, { status: 200 });
 }
@@ -79,6 +83,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             },
             body: JSON.stringify({ title, content, tags }),
         });
+
+        if (res.status === 401) {
+            // User is unauthenticated — return 401 response
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
 
         const data = await res.json();
         if (!res.ok) {

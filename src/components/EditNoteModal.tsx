@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { redirect } from 'next/navigation';
 import { X } from 'lucide-react';
 
 interface EditNoteModalProps {
@@ -50,7 +51,7 @@ export function EditNoteModal({ open, onOpenChange, note, onNoteUpdated }: EditN
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, content, tags }),
             });
-
+            if (res.status === 401) redirect('/login');
             const data = await res.json();
             if (!res.ok) throw new Error(data.message);
 

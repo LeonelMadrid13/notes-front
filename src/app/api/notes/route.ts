@@ -31,7 +31,10 @@ export async function GET() {
         });
 
         // console.log('[DEBUG] Notes API response status:', response.status);
-
+        if (response.status === 401) {
+            // User is unauthenticated — return 401 response
+            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+        }
         if (!response.ok) {
             const errorData = await response.json();
             return NextResponse.json({ message: errorData.message || 'Failed to fetch notes' }, { status: response.status });

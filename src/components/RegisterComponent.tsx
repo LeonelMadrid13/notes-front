@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { redirect } from 'next/navigation';
 
 export default function RegisterComponent() {
     const router = useRouter();
@@ -23,7 +24,7 @@ export default function RegisterComponent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password }),
             });
-
+            if (res.status === 401) redirect('/login');
             const data = await res.json();
             if (!res.ok) throw new Error(data.message);
 

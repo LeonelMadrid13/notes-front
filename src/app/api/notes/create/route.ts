@@ -31,6 +31,11 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({ title, content, userId, tags }),
     });
 
+    if (response.status === 401) {
+        // User is unauthenticated — return 401 response
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const data = await response.json();
     if (!response.ok) {
         return NextResponse.json({ message: data.message || 'Failed to create note' }, { status: response.status });

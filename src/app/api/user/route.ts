@@ -19,8 +19,12 @@ export async function GET() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
-
     });
+
+    if (response.status === 401) {
+        // User is unauthenticated — return 401 response
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!response.ok) {
         return NextResponse.json({ message: 'Failed to fetch user data' }, { status: response.status });

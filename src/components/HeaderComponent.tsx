@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LogoutConfirmDialog } from '@/components/LogoutConfirmDialog';
 import { useAuth } from '@/contexts/AuthContext';
+import { redirect } from 'next/navigation';
 
 const HeaderComponent = () => {
     const { user, loading } = useAuth();
@@ -22,6 +23,7 @@ const HeaderComponent = () => {
         const getUserName = async () => {
             try {
                 const res = await fetch('/api/user');
+                if (res.status === 401) redirect('/login');
                 if (!res.ok) throw new Error('Failed to fetch user data');
                 const data = await res.json();
                 setUserName(data.username || 'User');
