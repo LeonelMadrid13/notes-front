@@ -133,8 +133,8 @@ export default function DashboardPage() {
     }
 
     return (
-        <main className="max-w-2xl mx-auto mt-20 p-6 border rounded-2xl shadow-lg">
-            <div className="flex justify-between items-center mb-4">
+        <main className="w-full px-4 py-6 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 className="text-2xl font-bold">Notes</h1>
                 <CreateNoteModal onNoteCreated={fetchNotes} />
             </div>
@@ -185,14 +185,16 @@ export default function DashboardPage() {
 
             {error && <p className="text-red-500">{error}</p>}
 
-            {!filteredNotes ? (
-                <div className="space-y-4">
-                    <Skeleton className="h-24 w-full rounded-xl" />
-                    <Skeleton className="h-24 w-full rounded-xl" />
-                </div>
-            ) : (
-                <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} onNoteUpdated={handleNoteUpdated} />
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {!filteredNotes ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-24 w-full rounded-xl" />
+                        <Skeleton className="h-24 w-full rounded-xl" />
+                    </div>
+                ) : (
+                    <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} onNoteUpdated={handleNoteUpdated} />
+                )}
+            </div>
 
             <ConfirmDeleteDialog
                 open={dialogOpen}
