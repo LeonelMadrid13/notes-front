@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 <p className="text-sm text-gray-600 mb-2">Already have an account?</p>
                 <Button
                     variant="outline"
-                    onClick={() => router.push('/register')}
+                    onClick={() => router.push('/login')}
                     className="w-full"
                 >
                     Login
