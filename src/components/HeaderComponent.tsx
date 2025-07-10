@@ -26,7 +26,7 @@ const HeaderComponent = () => {
                 if (res.status === 401) router.push('/login');
                 if (!res.ok) throw new Error('Failed to fetch user data');
                 const data = await res.json();
-                setUserName(data.username || 'User');
+                setUserName(data.name || 'User');
             } catch (error) {
                 console.error('Error fetching user name:', error);
             }
