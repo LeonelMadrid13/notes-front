@@ -1,6 +1,6 @@
 // /app/api/notes/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { getAuthCookies } from '@/app/lib/auth';
 import { z } from 'zod';
 
 const NoteUpdateSchema = z.object({
@@ -11,8 +11,13 @@ const NoteUpdateSchema = z.object({
 
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const token = (await cookies()).get('token')?.value;
-    const userId = (await cookies()).get('id')?.value;
+    const authCookies = await getAuthCookies();
+
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { token, userId } = authCookies;
 
     if (!token || !userId) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -32,8 +37,14 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const token = (await cookies()).get('token')?.value;
-    const userId = (await cookies()).get('id')?.value;
+    const authCookies = await getAuthCookies();
+
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { token, userId } = authCookies;
+
     if (!userId) {
         return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
     }

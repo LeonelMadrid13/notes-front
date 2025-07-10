@@ -1,4 +1,3 @@
-// app/api/login/route.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
@@ -15,20 +14,25 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-        return NextResponse.json({ message: data.message || 'Login failed' }, { status: response.status });
+        return NextResponse.json(
+            { success: false, error: data.error || 'Login failed' },
+            { status: response.status }
+        );
     }
 
-    const token = data.token;
-    const userId = data.id;
+    const token = data.data?.token;
+    const user = data.data?.user;
 
-    if (!token) {
-        return NextResponse.json({ message: 'No token returned' }, { status: 500 });
-    }
-    if (!userId) {
-        return NextResponse.json({ message: 'No user ID returned' }, { status: 500 });
+    if (!token || !user?.id) {
+        return NextResponse.json(
+            { success: false, error: 'Invalid login response from server' },
+            { status: 500 }
+        );
     }
 
-    (await cookies()).set('token', token, {
+    const cookieStore = await cookies();
+
+    cookieStore.set('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -36,7 +40,7 @@ export async function POST(req: NextRequest) {
         path: '/',
     });
 
-    (await cookies()).set('id', userId, {
+    cookieStore.set('id', user.id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -44,5 +48,10 @@ export async function POST(req: NextRequest) {
         path: '/',
     });
 
-    return NextResponse.json({ message: 'Logged in successfully' });
+    return NextResponse.json({
+        success: true,
+        data: {
+            user,
+        },
+    });
 }

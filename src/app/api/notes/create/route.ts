@@ -1,10 +1,15 @@
 // app/api/notes/create/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { getAuthCookies } from '@/app/lib/auth';
 
 export async function POST(req: NextRequest) {
-    const token = (await cookies()).get('token')?.value;
-    const userId = (await cookies()).get('id')?.value;
+    const authCookies = await getAuthCookies();
+
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { token, userId } = authCookies;
 
     if (!token || !userId) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });

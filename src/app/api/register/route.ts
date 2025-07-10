@@ -20,8 +20,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: data.message || 'Registration failed' }, { status: response.status });
     }
 
-    const { token, user } = data;
-    if (!token || !user?.id) {
+    const { token, id } = data;
+
+    if (!token || !id) {
         return NextResponse.json({ message: 'Invalid response from API' }, { status: 500 });
     }
 
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
         path: '/',
     });
 
-    (await cookies()).set('id', user.id, {
+    (await cookies()).set('id', id, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',

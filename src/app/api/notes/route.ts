@@ -1,13 +1,15 @@
 // /app/api/notes/route.ts
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { getAuthCookies } from '@/app/lib/auth';
 
 export async function GET() {
-    // console.log('[DEBUG] Incoming request to /api/notes');
-    // console.log('[DEBUG] Headers:', Object.fromEntries(req.headers.entries()));
+    const authCookies = await getAuthCookies();
 
-    const token = (await cookies()).get('token')?.value || '';
-    const userId = (await cookies()).get('id')?.value || '';
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { token, userId } = authCookies;
 
 
     // console.log('[DEBUG] Parsed token:', token ? '[REDACTED]' : 'None');
