@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { EditNoteModal } from './EditNoteModal';
+import { NoteDetailModal } from './NoteDetailModal';
 import type { Note } from '@/app/(notes)/dashboard/page';
+import { cn } from '@/lib/utils';
 
 interface NotesListProps {
     notes: Note[];
@@ -17,29 +18,30 @@ export function NotesList({ notes, onDelete, onTagClick, onNoteUpdated }: NotesL
     const [editOpen, setEditOpen] = useState(false);
     const [editNote, setEditNote] = useState<Note | null>(null);
 
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [detailOpen, setDetailOpen] = useState(false);
+
+
     return (
         <>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
                 {notes.map(note => (
-                    <div key={note.id} className="p-4 border rounded-xl shadow-sm bg-white">
+                    <div
+                        key={note.id}
+                        className={cn(
+                            'p-4 border rounded-xl shadow-sm bg-white transition hover:shadow-md break-words',
+                            'col-span-1',
+                            note.content.length > 300 ? 'sm:col-span-2' : ''
+                        )}
+                        onClick={() => {
+                            setSelectedNote(note);
+                            setDetailOpen(true);
+                        }}
+                    >
                         <div className="flex justify-between items-start mb-2">
                             <h2 className="text-lg font-semibold leading-tight break-words">
                                 {note.title || 'Untitled'}
                             </h2>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => {
-                                        setEditNote(note);
-                                        setEditOpen(true);
-                                    }}
-                                    aria-label="Edit note"
-                                >
-                                    <Pencil className="w-4 h-4 text-blue-500 hover:text-blue-700" />
-                                </button>
-                                <button onClick={() => onDelete(note.id)} aria-label="Delete note">
-                                    <X className="w-4 h-4 text-red-500 hover:text-red-700" />
-                                </button>
-                            </div>
                         </div>
 
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap mb-2">
@@ -47,7 +49,7 @@ export function NotesList({ notes, onDelete, onTagClick, onNoteUpdated }: NotesL
                         </p>
 
                         {Array.isArray(note.tags) && note.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-4">
                                 {note.tags.map(tag => (
                                     <Badge
                                         key={tag}
@@ -70,6 +72,22 @@ export function NotesList({ notes, onDelete, onTagClick, onNoteUpdated }: NotesL
                 note={editNote}
                 onNoteUpdated={onNoteUpdated}
             />
+
+            <NoteDetailModal
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                note={selectedNote}
+                onEdit={() => {
+                    setDetailOpen(false);
+                    setEditNote(selectedNote); // reuse existing modal
+                    setEditOpen(true);
+                }}
+                onDelete={() => {
+                    setDetailOpen(false);
+                    onDelete(selectedNote!.id);
+                }}
+            />
+
         </>
     );
 }

@@ -185,16 +185,14 @@ export default function DashboardPage() {
 
             {error && <p className="text-red-500">{error}</p>}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {!filteredNotes ? (
-                    <div className="space-y-4">
-                        <Skeleton className="h-24 w-full rounded-xl" />
-                        <Skeleton className="h-24 w-full rounded-xl" />
-                    </div>
-                ) : (
-                    <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} onNoteUpdated={handleNoteUpdated} />
-                )}
-            </div>
+            {!filteredNotes ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-24 w-full rounded-xl" />
+                    <Skeleton className="h-24 w-full rounded-xl" />
+                </div>
+            ) : (
+                <NotesList notes={filteredNotes} onDelete={confirmDelete} onTagClick={handleTagClick} onNoteUpdated={handleNoteUpdated} />
+            )}
 
             <ConfirmDeleteDialog
                 open={dialogOpen}

@@ -28,7 +28,7 @@ export function ConfirmDeleteDialog({ open, onOpenChange, onConfirm }: ConfirmDe
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>Delete</AlertDialogAction>
+                    <AlertDialogAction onClick={onConfirm} className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60">Delete</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
