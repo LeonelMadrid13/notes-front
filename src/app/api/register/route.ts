@@ -14,11 +14,10 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({ name, email, password }),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-        return NextResponse.json({ message: data.message || 'Registration failed' }, { status: response.status });
+        return NextResponse.json({ message: response.json() || 'Registration failed' }, { status: response.status });
     }
+    const { data } = await response.json();
 
     const { token, id } = data;
 
