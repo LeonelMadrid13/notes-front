@@ -3,11 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL || 'http://localhost:5000';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+function extractIdFromUrl(url: string) {
+    const segments = url.split('/');
+    return segments[segments.length - 1];
+}
+
+export async function PUT(req: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     const id = cookieStore.get('id')?.value;
-    const userId = params.id;
+    const userId = extractIdFromUrl(req.url);
 
     if (!token) {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -21,7 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                id: id || ''
+                id: id || '',
             },
             body: JSON.stringify(body),
         });
@@ -33,18 +38,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         }
 
         return NextResponse.json({ success: true, data }, { status: 200 });
-
     } catch (err) {
         console.error('[PUT /api/users/[id]]', err);
         return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 });
     }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest) {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     const id = cookieStore.get('id')?.value;
-    const userId = params.id;
+    const userId = extractIdFromUrl(req.url);
 
     if (!token) {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -56,7 +60,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                id: id || ''
+                id: id || '',
             },
         });
 
@@ -67,7 +71,6 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
         }
 
         return NextResponse.json({ success: true, data }, { status: 200 });
-
     } catch (err) {
         console.error('[DELETE /api/users/[id]]', err);
         return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 });
