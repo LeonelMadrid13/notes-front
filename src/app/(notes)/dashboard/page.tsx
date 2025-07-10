@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { addTagIfNotExists, generateSuggestions } from '@/utils/dashboard';
-import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteDialog';
+import { ConfirmDeleteDialog } from '@/components/ConfirmDeleteNoteDialog';
 
 
 const CreateNoteModal = dynamic(() => import('@/components/CreateNoteModal'), { ssr: false });

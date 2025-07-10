@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LogoutConfirmDialog } from '@/components/LogoutConfirmDialog';
 import { useAuth } from '@/contexts/AuthContext';
-import { redirect } from 'next/navigation';
 
 const HeaderComponent = () => {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname(); // 🔍 Detect current route
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [userName, setUserName] = useState<string>('User');
@@ -23,7 +23,7 @@ const HeaderComponent = () => {
         const getUserName = async () => {
             try {
                 const res = await fetch('/api/user');
-                if (res.status === 401) redirect('/login');
+                if (res.status === 401) router.push('/login');
                 if (!res.ok) throw new Error('Failed to fetch user data');
                 const data = await res.json();
                 setUserName(data.username || 'User');
@@ -32,7 +32,7 @@ const HeaderComponent = () => {
             }
         };
         getUserName();
-    }, []);
+    }, [router]);
 
     if (loading) return <p className="px-4 py-2">Loading...</p>;
 
@@ -48,8 +48,11 @@ const HeaderComponent = () => {
                         <Button
                             variant="secondary"
                             className="w-full sm:w-auto px-4 py-2 text-sm rounded-md"
+                            onClick={() =>
+                                router.push(pathname.startsWith('/admin') ? '/dashboard' : '/admin')
+                            }
                         >
-                            Admin Panel
+                            {pathname.startsWith('/admin') ? 'Back to Dashboard' : 'Admin Panel'}
                         </Button>
                     )}
                     <Button

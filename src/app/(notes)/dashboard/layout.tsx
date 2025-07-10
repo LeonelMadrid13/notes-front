@@ -12,11 +12,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     if (!token) redirect('/login');
 
     return (
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
-            <AuthProvider>
-                <HeaderComponent />
-                <main className="p-6">{children}</main>
-            </AuthProvider>
-        </div>
+        <AuthProvider>
+            <HeaderComponent />
+            <main className="w-full px-4 py-6 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+                {children}
+            </main>
+        </AuthProvider>
     );
 }
