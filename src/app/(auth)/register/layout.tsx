@@ -70,6 +70,17 @@ export default function RegisterPage() {
             <Button onClick={handleRegister} disabled={loading} className="w-full">
                 {loading ? 'Registering...' : 'Register'}
             </Button>
+
+            <div className="mt-4 text-center">
+                <p className="text-sm text-gray-600 mb-2">Already have an account?</p>
+                <Button
+                    variant="outline"
+                    onClick={() => router.push('/register')}
+                    className="w-full"
+                >
+                    Login
+                </Button>
+            </div>
         </div>
     );
 }
