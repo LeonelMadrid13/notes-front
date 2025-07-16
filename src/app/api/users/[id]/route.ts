@@ -1,22 +1,22 @@
-import { cookies } from 'next/headers';
+import { getAuthCookies } from '@/app/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL || 'http://localhost:5000';
 
-function extractIdFromUrl(url: string) {
-    const segments = url.split('/');
-    return segments[segments.length - 1];
-}
-
-export async function PUT(req: NextRequest) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-    const id = cookieStore.get('id')?.value;
-    const userId = extractIdFromUrl(req.url);
-
-    if (!token) {
-        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const authCookies = await getAuthCookies();
+    
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
+
+    const { token, refreshToken, userId } = authCookies;
+
+    if (!token || !refreshToken) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
 
     const body = await req.json();
 
@@ -44,11 +44,20 @@ export async function PUT(req: NextRequest) {
     }
 }
 
-export async function DELETE(req: NextRequest) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-    const id = cookieStore.get('id')?.value;
-    const userId = extractIdFromUrl(req.url);
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const authCookies = await getAuthCookies();
+
+    if (!authCookies || !authCookies.token || !authCookies.userId) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { token, refreshToken, userId } = authCookies;
+
+    if (!token || !refreshToken) {
+        return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
 
     if (!token) {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });

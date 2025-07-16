@@ -7,17 +7,18 @@ export async function GET() {
 
     const authCookies = await getAuthCookies();
 
-    if (!authCookies || !authCookies.token || !authCookies.userId) {
+    if (!authCookies || !authCookies.token || !authCookies.userId || !authCookies.refreshToken) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { token, userId } = authCookies;
+    const { userId, refreshToken, token } = authCookies;
 
     const response = await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/users/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            refreshToken: refreshToken || '',
         },
     });
 

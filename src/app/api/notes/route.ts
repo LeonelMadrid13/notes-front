@@ -11,6 +11,7 @@ export async function GET() {
 
     const { token, userId } = authCookies;
 
+    // console.log({ authCookies });
 
     // console.log('[DEBUG] Parsed token:', token ? '[REDACTED]' : 'None');
 

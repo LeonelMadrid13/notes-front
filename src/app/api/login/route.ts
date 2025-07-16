@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
 
     const response = await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+         },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
     });
 
@@ -20,38 +22,21 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const token = data.data?.token;
     const user = data.data?.user;
 
-    if (!token || !user?.id) {
-        return NextResponse.json(
-            { success: false, error: 'Invalid login response from server' },
-            { status: 500 }
-        );
-    }
-
-    const cookieStore = await cookies();
-
-    cookieStore.set('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24,
-        path: '/',
-    });
-
-    cookieStore.set('id', user.id, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24,
-        path: '/',
-    });
-
-    return NextResponse.json({
+    // Create the response
+    const nextResponse = NextResponse.json({
         success: true,
         data: {
             user,
         },
     });
+
+    // Forward all Set-Cookie headers from the backend to the frontend
+    const setCookieHeaders = response.headers.get('set-cookie');
+    if (setCookieHeaders) {
+        nextResponse.headers.set('Set-Cookie', setCookieHeaders);
+    }
+
+    return nextResponse;
 }

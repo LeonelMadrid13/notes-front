@@ -17,17 +17,19 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { token, userId } = authCookies;
+    const { token, refreshToken } = authCookies;
 
-    if (!token || !userId) {
+    if (!token || !refreshToken) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
+
     const { id } = await params;
     const response = await fetch(`${process.env.API_URL || 'http://localhost:5000'}/api/notes/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            refreshToken: refreshToken || '',
         },
     });
     if (response.status === 401) {
@@ -47,7 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { token, userId } = authCookies;
+    const { token, userId, refreshToken } = authCookies;
 
     if (!userId) {
         return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
@@ -80,7 +82,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
+                refreshToken: refreshToken || '',
             },
+            credentials: 'include',
             body: JSON.stringify({ title, content, tags }),
         });
 

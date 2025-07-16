@@ -5,13 +5,13 @@ import { getAuthCookies } from '@/app/lib/auth';
 export async function POST(req: NextRequest) {
     const authCookies = await getAuthCookies();
 
-    if (!authCookies || !authCookies.token || !authCookies.userId) {
+    if (!authCookies || !authCookies.token || !authCookies.userId || !authCookies.refreshToken) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { token, userId } = authCookies;
+    const { token, userId, refreshToken } = authCookies;
 
-    if (!token || !userId) {
+    if (!token || !userId || !refreshToken) {
         return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
+            refreshToken: authCookies.refreshToken || '',
         },
         body: JSON.stringify({ title, content, userId, tags }),
     });

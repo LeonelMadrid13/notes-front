@@ -1,15 +1,14 @@
 // app/dashboard/layout.tsx
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import HeaderComponent from '@/components/HeaderComponent';
+import { getAuthCookies } from '@/app/lib/auth';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
+    const authCookies = await getAuthCookies();
 
-    if (!token) redirect('/login');
+    if (!authCookies?.token) redirect('/login');
 
     return (
         <AuthProvider>
